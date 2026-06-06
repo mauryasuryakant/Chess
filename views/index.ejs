@@ -1,77 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Play chess online with friends. Create a room, share the code, and start playing.">
+  <title>Chess Arena - Play Chess Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    :root {
+      --bg-primary: #302E2B;
+      --bg-secondary: #272522;
+      --bg-tertiary: #1e1c1a;
+      --bg-card: #3a3835;
+      --accent: #81B64C;
+      --accent-hover: #6fa33e;
+      --text-primary: #f0f0f0;
+      --text-secondary: #b0ada8;
+      --text-muted: #7c7a76;
+      --border: #4a4744;
+      --danger: #e74c3c;
+      --success: #81B64C;
+    }
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-        body {
-            background: #18181b;
-        }
+    .bg-pattern {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(129, 182, 76, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(129, 182, 76, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        .chessBoard {
-            width: 560px;
-            height: 560px;
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(8, 1fr);
-            border: 4px solid white;
-        }
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      padding: 40px 20px;
+      width: 100%;
+      max-width: 520px;
+    }
 
-        .square {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .logo-section {
+      text-align: center;
+      animation: fadeInDown 0.8s ease;
+    }
 
-        .light {
-            background-color: #f0d9b5;
-        }
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--accent), #6fa33e);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      box-shadow: 0 8px 32px rgba(129, 182, 76, 0.3);
+    }
 
-        .dark {
-            background-color: #b58863;
-        }
+    .logo-section h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-        .piece {
-            font-size: 42px;
-            cursor: grab;
-            user-select: none;
-        }
+    .logo-section p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-top: 8px;
+      font-weight: 300;
+    }
 
-        .piece.white {
-            color: white;
-            text-shadow: 0 0 2px black;
-        }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
 
-        .piece.black {
-            color: black;
-        }
-    </style>
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #6fa33e);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(129, 182, 76, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(129, 182, 76, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+      transform: translateY(-2px);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 24px 0;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 500;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-group input:focus {
+      border-color: var(--accent);
+    }
+
+    .input-group .btn {
+      width: auto;
+      flex-shrink: 0;
+      padding: 14px 24px;
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.85rem;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .footer {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      animation: fadeInUp 0.8s ease 0.4s both;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 24px 16px; }
+      .logo-section h1 { font-size: 1.8rem; }
+      .card { padding: 24px; }
+    }
+  </style>
 </head>
 <body>
+  <div class="bg-pattern"></div>
+  <div class="container">
+    <div class="logo-section">
+      <div class="logo-icon">♞</div>
+      <h1>Chess Arena</h1>
+      <p>Play chess with friends in real time</p>
+    </div>
 
-<div class="w-full h-screen flex items-center justify-center">
-    <div class="chessBoard"></div>
-</div>
+    <div class="card">
+      <h2>Start a New Game</h2>
+      <button id="createRoomBtn" class="btn btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Create Room
+      </button>
 
-<script
-src="https://cdn.socket.io/4.8.3/socket.io.min.js">
-</script>
+      <div class="divider">or join existing</div>
 
-<script
-src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js">
-</script>
+      <div class="input-group">
+        <input type="text" id="roomIdInput" placeholder="Enter Room ID" maxlength="8" autocomplete="off">
+        <button id="joinRoomBtn" class="btn btn-secondary">Join</button>
+      </div>
+      <p class="error-msg" id="errorMsg"></p>
+    </div>
 
-<script src="/javascript/chess-game.js"></script>
+    <p class="footer">10 minute games • Drag & drop • Real-time multiplayer</p>
+  </div>
 
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    document.getElementById('createRoomBtn').addEventListener('click', () => {
+      document.getElementById('createRoomBtn').disabled = true;
+      socket.emit('createRoom', { timeControl: 600 }, (response) => {
+        document.getElementById('createRoomBtn').disabled = false;
+        if (response.success) {
+          sessionStorage.setItem('chess_socketId', socket.id);
+          sessionStorage.setItem('chess_role', 'white');
+          sessionStorage.setItem('chess_roomId', response.roomId);
+          window.location.href = '/game/' + response.roomId;
+        } else {
+          showError(response.error || 'Failed to create room.');
+        }
+      });
+    });
+
+    document.getElementById('joinRoomBtn').addEventListener('click', joinRoom);
+    document.getElementById('roomIdInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') joinRoom();
+    });
+
+    function joinRoom() {
+      const roomId = document.getElementById('roomIdInput').value.trim();
+      if (!roomId) {
+        showError('Please enter a Room ID.');
+        return;
+      }
+      document.getElementById('joinRoomBtn').disabled = true;
+      socket.emit('joinRoom', { roomId }, (response) => {
+        document.getElementById('joinRoomBtn').disabled = false;
+        if (response.success) {
+          sessionStorage.setItem('chess_socketId', socket.id);
+          sessionStorage.setItem('chess_role', response.role);
+          sessionStorage.setItem('chess_roomId', response.roomId);
+          window.location.href = '/game/' + response.roomId;
+        } else {
+          showError(response.error || 'Failed to join room.');
+        }
+      });
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 4000);
+    }
+  </script>
 </body>
 </html>
